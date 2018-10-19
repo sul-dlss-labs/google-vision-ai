@@ -1,0 +1,32 @@
+<h2>Results for <%=@druid%></h2>
+<%= link_to '[enter another druid]', root_path %>
+
+<% if @error %>
+
+  <p>An error occurred.  Its possible the PURL doesn't exist, is not public, or something else happened.  <%=@error %></p>
+
+<% else %>
+  <% @results.each do |result| %>
+
+    <p><%= result[:image] %></p>
+    <%= image_tag result[:image] %>
+
+    <h3>Labels</h3>
+    <table>
+        <tr><th>Label</th><th>Score</th></tr>
+      <% result[:labels].each do |label| %>
+        <tr><td><%=label[:description]%></td><td><%=label[:score]%></td></tr>
+      <% end %>
+    </table>
+
+    <h3>Entities</h3>
+    <table>
+        <tr><th>Entity</th><th>Score</th></tr>
+      <% result[:entities].each do |label| %>
+        <tr><td><%=label[:description]%></td><td><%=label[:score]%></tr>
+      <% end %>
+    </table>
+
+  <% end %>
+
+<% end %>
