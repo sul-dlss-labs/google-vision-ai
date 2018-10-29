@@ -1,5 +1,7 @@
 <h2>Enter a druid or PURL:</h2>
 
+<p>Note the object must be an item (not a collection) and must contain fully public images only (no stanford-only, zoom-only, dark, etc.)</p>
+
 <%= form_tag results_path, method: :post do %>
 
   <%= text_field_tag(:input_value, @input_value, size: 100) %>
