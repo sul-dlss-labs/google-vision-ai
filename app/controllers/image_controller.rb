@@ -19,8 +19,6 @@ class ImageController < ApplicationController
 
     @druid = druid_match.to_s
 
-    project_id = "sul-ai-studio" # Your Google Cloud Platform project ID
-
     iiif_manifest_url = "https://purl.stanford.edu/#{@druid}/iiif/manifest"
 
     begin
@@ -29,7 +27,7 @@ class ImageController < ApplicationController
       images = client.image_resources
 
       @results = []
-      vision = Google::Cloud::Vision.new project: project_id
+      vision = Google::Cloud::Vision.new project: PROJECT_ID
       images.each do |image|
         response = vision.image(image)
         labels = response.labels.map { |label| {description: label.description, score: label.score} }

@@ -4,3 +4,5 @@ if Rails.env == "production"
     f.write(ERB.new(File.read('./google_application_credentials.json.tmp')).result)
   end
 end
+
+PROJECT_ID = "sul-ai-studio" # Your Google Cloud Platform project ID
