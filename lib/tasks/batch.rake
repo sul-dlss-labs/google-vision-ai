@@ -40,14 +40,22 @@ namespace :vision do
 
         if File.exists?(full_path)
 
-          response = vision.image(full_path)
+          begin
 
-          response.labels.each { |label| csv << [filename, "label", label.description, label.score.round(2)] }
-          response.web.entities.each { |entity| csv << [filename, "entity", entity.description, entity.score.round(2)] }
+            response = vision.image(full_path)
 
-          ocr_response = response.text # nope, not a typo, text is the part of the response that has OCR info, and text is the attribute with the actual OCRed text
-          ocr_text = ocr_response ? ocr_response.text.gsub(/\n/," ") : ""
-          csv << [filename, "ocr", ocr_text, ""]
+            response.labels.each { |label| csv << [filename, "label", label.description, label.score.round(2)] }
+            response.web.entities.each { |entity| csv << [filename, "entity", entity.description, entity.score.round(2)] }
+
+            ocr_response = response.text # nope, not a typo, text is the part of the response that has OCR info, and text is the attribute with the actual OCRed text
+            ocr_text = ocr_response ? ocr_response.text.gsub(/\n/," ") : ""
+            csv << [filename, "ocr", ocr_text, ""]
+
+          rescue StandardError => e
+
+            puts "***ERROR: exception #{e.message} for #{filename}!"
+
+          end
 
         else
 
