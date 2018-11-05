@@ -5,4 +5,8 @@ if Rails.env == "production"
   end
 end
 
+if Rails.env == "staging"
+  ENV['GOOGLE_APPLICATION_CREDENTIALS'] = './config/google_application_credentials.json'
+end
+
 PROJECT_ID = "sul-ai-studio" # Your Google Cloud Platform project ID

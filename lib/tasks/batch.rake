@@ -23,31 +23,38 @@ namespace :vision do
 
     vision = Google::Cloud::Vision.new project: PROJECT_ID
 
-    header_row = ["filename","labels","label_scores","entities","entity_scores"]
-    #Setup the output csv
+    header_row = ["filename","type","value","score"]
+
     CSV.open(output, "wb") do |csv|
-      #Write Out The Headers
       csv << header_row
 
-      filenames = CSV.read(input)
-      total = filenames.size
+      input_data = CSV.read(input, { encoding: "UTF-8", headers: true, header_converters: :symbol, converters: :all}).map { |d| d.to_hash }
+      total = input_data.size
+
       puts "#{total} files in input file"
-      filenames.each_with_index do |row, i|
-        filename = row[0]
+      input_data.each_with_index do |row, i|
+        filename = row[:filename]
         full_path = File.join(base_path,filename)
+
         puts "...#{i+1} of #{total}: #{filename}"
 
-        response = vision.image(full_path)
-        label_response = response.labels
-        entity_response = response.web.entities
+        if File.exists?(full_path)
 
-        labels = label_response.map { |label| label.description }.join(', ')
-        label_scores = label_response.map { |label| label.score.round(2) }.join(', ')
+          response = vision.image(full_path)
 
-        entities = entity_response.map { |entity| entity.description }.join(', ')
-        entity_scores = entity_response.map { |entity| entity.score.round(2) }.join(', ')
+          response.labels.each { |label| csv << [filename, "label", label.description, label.score.round(2)] }
+          response.web.entities.each { |entity| csv << [filename, "entity", entity.description, entity.score.round(2)] }
 
-        csv << [filename, labels, label_scores, entities, entity_scores]
+          ocr_response = response.text # nope, not a typo, text is the part of the response that has OCR info, and text is the attribute with the actual OCRed text
+          ocr_text = ocr_response ? ocr_response.text.gsub(/\n/," ") : ""
+          csv << [filename, "ocr", ocr_text, ""]
+
+        else
+
+          puts "***ERROR: file #{filename} not found!"
+
+        end
+
       end
 
     end

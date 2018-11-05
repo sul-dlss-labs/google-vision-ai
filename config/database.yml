@@ -15,11 +15,7 @@
 # gem 'pg'
 #
 default: &default
-  adapter: postgresql
-  encoding: unicode
-  # For details on connection pooling, see Rails configuration guide
-  # http://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  adapter: sqlite3
 
 development:
   adapter: sqlite3
@@ -58,8 +54,10 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
-  database: google-vision-ai_test
+  adapter: sqlite3
+  database: db/test.sqlite3
+  pool: 5
+  timeout: 5000
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -80,8 +78,14 @@ test:
 #   production:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
+staging:
+  adapter: mysql2
+  database: google-vision-ai
+  pool: 5
+  timeout: 5000
+
 production:
-  <<: *default
-  database: google-vision-ai_production
-  username: google-vision-ai
-  password: <%= ENV['GOOGLE-VISION-AI_DATABASE_PASSWORD'] %>
+  adapter: sqlite3
+  database: db/production.sqlite3
+  pool: 5
+  timeout: 5000
