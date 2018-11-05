@@ -6,7 +6,6 @@ require 'capistrano/deploy'
 
 require 'capistrano/rails'
 require 'dlss/capistrano'
-require 'capistrano/honeybadger'
 
 # Load the SCM plugin appropriate to your project:
 #
@@ -40,3 +39,10 @@ install_plugin Capistrano::SCM::Git
 
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
 Dir.glob("lib/capistrano/tasks/*.rake").each { |r| import r }
+
+namespace :deploy do
+  Rake::Task["migrate"].clear_actions
+  task :migrate do
+    puts "no migration"
+  end
+end
