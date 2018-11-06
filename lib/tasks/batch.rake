@@ -23,6 +23,10 @@ namespace :vision do
 
     vision = Google::Cloud::Vision.new project: PROJECT_ID
 
+    success_count = 0
+    error_count = 0
+    error_files = []
+
     header_row = ["filename","type","value","score"]
 
     CSV.open(output, "wb") do |csv|
@@ -50,16 +54,21 @@ namespace :vision do
             ocr_response = response.text # nope, not a typo, text is the part of the response that has OCR info, and text is the attribute with the actual OCRed text
             ocr_text = ocr_response ? ocr_response.text.gsub(/\n/," ") : ""
             csv << [filename, "ocr", ocr_text, ""]
+            success_count += 1
 
           rescue StandardError => e
 
             puts "***ERROR: exception #{e.message} for #{filename}!"
+            error_files << filename
+            error_count += 1
 
           end
 
         else
 
           puts "***ERROR: file #{filename} not found!"
+          error_files << filename
+          error_count += 1
 
         end
 
@@ -69,8 +78,9 @@ namespace :vision do
     end_time = Time.now
     puts "ended at #{end_time}"
     puts "Total run time = #{((end_time - start_time)/60.0).round(1)} minutes"
+    puts "Error count: #{error_count}, success count: #{success_count}"
     puts "Output file: #{output}"
-
+    puts "Errored out filenames: \r\n#{error_files.join("\r\n")}"
   end
 
 end
